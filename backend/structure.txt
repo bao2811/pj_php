@@ -1,0 +1,39 @@
+my-laravel-backend/
+├── app/
+│   ├── Console/        # Artisan commands
+│   ├── Exceptions/     # Xử lý lỗi
+│   ├── Http/           # Controllers, Middleware, FormRequests
+│   │   ├── Controllers/
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   ├── Models/         # Eloquent Models
+│   └── Providers/      # Service Providers
+├── bootstrap/
+│   └── cache/          # Cache framework
+├── config/             # Config: database, mail, auth…
+├── database/
+│   ├── factories/      # Tạo dữ liệu mẫu
+│   ├── migrations/     # Tạo bảng
+│   └── seeders/        # Seed dữ liệu
+├── public/
+│   └── index.php       # Entry point, web server truy cập
+├── routes/
+│   └── api.php         # Tất cả endpoint API
+├── storage/
+│   ├── app/
+│   ├── framework/
+│   └── logs/           # Log file
+├── tests/              # Unit & Feature tests
+├── vendor/             # Composer packages
+├── artisan             # CLI của Laravel
+└── composer.json
+
+php artisan cache:table
+php artisan route:cache
+php artisan migrate : tạo bảng db
+👉 Ưu điểm:  Không cần lưu token trong DB → giảm tải.  
+Tự chứa thông tin user và thời gian hết hạn.  Hợp với hệ thống phân tán (nhiều server backend).  
+👉 Nhược điểm:  Không dễ thu hồi (revoke) 1 token đã phát hành → nếu token bị lộ, phải có cơ chế blacklist.  
+Phức tạp hơn api_token đơn giản.
+composer require tymon/jwt-auth 
+

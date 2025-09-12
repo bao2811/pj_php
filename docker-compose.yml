@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: laravel_db
+
+  backend:
+    image: php:8.2-apache
+    container_name: laravel-backend
+    volumes:
+      - ./backend:/var/www/html
+    ports:
+      - "8000:80"
+    working_dir: /var/www/html
+    command: bash -c "apt-get update && apt-get install -y unzip git curl \
+      && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+      && composer install \
+      && php artisan serve --host=0.0.0.0 --port=8000"
+
+  frontend:
+    image: node:20
+    container_name: nextjs-frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    command: bash -c "npm install && npm run dev"
