@@ -28,6 +28,8 @@ my-laravel-backend/
 ├── artisan             # CLI của Laravel
 └── composer.json
 
+php artisan serve
+
 php artisan cache:table
 php artisan route:cache
 php artisan migrate : tạo bảng db
