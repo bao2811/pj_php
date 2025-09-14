@@ -5,21 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\AuthController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 
-
-// Protected Routes
-Route::middleware('auth:sanctum', )->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/create/note', [NoteController::class, 'create']);
@@ -31,4 +22,6 @@ Route::middleware('auth:sanctum', )->group(function () {
     // Note endpoints
     Route::apiResource('notes', NoteController::class);
 });
+Route::get('/notes/user/{userId}', [NoteController::class, 'getAllByUserId']);
+Route::get('/note/{id}', [NoteController::class, 'getNoteById']);
 

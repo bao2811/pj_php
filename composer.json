@@ -1,5 +1,6 @@
 {
     "require": {
-        "laravel/sanctum": "^4.2"
+        "laravel/sanctum": "^4.2",
+        "firebase/php-jwt": "^6.11"
     }
 }

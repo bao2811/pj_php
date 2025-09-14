@@ -51,14 +51,27 @@ const Register = () => {
     }
 
     try {
-      // API call to register
-      const response = await axios.post<{ token: string; user: any }>(
-        "http://localhost:8000/register",
-        formData
-      );
+      const response = await fetch("http://localhost:8000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        try {
+          throw JSON.parse(data); 
+        } catch {
+          throw { message: data };
+        }
+      }
+
+      console.log("Registration successful:", data);
 
       // Store the token in localStorage
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", data.token);
 
       // Redirect to dashboard
       router.push("/dashboard");

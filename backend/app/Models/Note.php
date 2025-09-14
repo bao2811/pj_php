@@ -9,12 +9,13 @@ class Note extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected $table = 'notes';
+    protected $primaryKey = 'noteId';
+    public $incrementing = true;      
+    protected $keyType = 'int'; 
+
     protected $fillable = [
+        'userId',
         'title',
         'content',
     ];
