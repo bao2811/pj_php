@@ -9,14 +9,22 @@ class Note extends Model
 {
     use HasFactory;
 
-    protected $table = 'notes';
-    protected $primaryKey = 'noteId';
-    public $incrementing = true;      
-    protected $keyType = 'int'; 
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'userId',
         'title',
         'content',
+        'user_id',
     ];
+
+    /**
+     * Get the user that owns the note.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

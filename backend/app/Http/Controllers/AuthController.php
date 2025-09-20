@@ -7,12 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Utils\JWTUtil;
 
 class AuthController extends Controller
 {
-    /**
-     * Handle user login
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -29,20 +27,21 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+        $jwtToken = JWTUtil::generateToken($user->id, 60);
 
         return response()->json([
             'token' => $token,
+            'jwt_token' => $jwtToken,
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'role' => $user->role,
             ]
         ]);
     }
 
-    /**
-     * Handle user registration
-     */
+
     public function register(Request $request)
     {
         $request->validate([
@@ -55,6 +54,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'user',
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -69,22 +69,10 @@ class AuthController extends Controller
         ], 201);
     }
 
-    /**
-     * Handle user logout
-     */
+
     public function logout(Request $request)
     {
-        // Revoke the token that was used to authenticate the current request
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Logged out successfully']);
+      return response()->json(['message' => 'Logged out successfully']);
     }
 
-    /**
-     * Get authenticated user details
-     */
-    public function user(Request $request)
-    {
-        return response()->json($request->user());
-    }
 }

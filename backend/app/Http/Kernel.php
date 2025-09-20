@@ -30,13 +30,13 @@ class Kernel extends HttpKernel
         'api' => [
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            'jwt.auth',
+            'jwt',
         ],
     ];
 
 
     protected $middlewareAliases = [
-        'jwt.auth' => \App\Http\Middleware\JwtMiddleware::class,
+        'jwt' => \App\Http\Middleware\JwtMiddleware::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
