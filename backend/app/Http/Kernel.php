@@ -32,6 +32,12 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             'jwt',
         ],
+
+        'admin' => [
+            \Illuminate\Routing\Middleware\ThrottleRequests::class.':admin',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'jwt',
+        ],
     ];
 
 

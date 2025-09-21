@@ -26,6 +26,10 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user->banned == 1) {
+            return response()->json(['error' => 'Your account has been banned. Please contact support.'], 403);
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
         $jwtToken = JWTUtil::generateToken($user->id, 60);
 

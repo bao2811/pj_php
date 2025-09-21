@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/dist/client/link";
 import { usePathname } from "next/navigation";
 import axios from "axios";
-import { useUser } from "./User";
+import { useUser } from "@/components/User";
 
 interface User {
   id: number;

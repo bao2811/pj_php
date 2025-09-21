@@ -17,7 +17,7 @@ class NoteController extends Controller
 
     public function getAllByUserId(Request $request)
     {
-        $userId = $request->get('userId'); // lấy từ JWT middleware
+        $userId = $request->get('userId');
         if (!$userId) {
             return response()->json(['error' => 'User ID not found in token'], 401);
         }
@@ -59,8 +59,6 @@ class NoteController extends Controller
             'INSERT INTO notes (title, content, created_at, updated_at, isCur, userId) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?)',
             [$title, $content, 1, $userId]
         );
-
-        // return response()->json($note, 201);
 
         return response()->json(['message' => 'Note created successfully'], 201);
     }

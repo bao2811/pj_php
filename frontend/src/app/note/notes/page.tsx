@@ -145,7 +145,6 @@ export default function NotesPage() {
     }
   };
 
-  // Delete note
   const handleDeleteNote = async (noteId: number) => {
     if (window.confirm("Are you sure you want to delete this note?")) {
       try {
