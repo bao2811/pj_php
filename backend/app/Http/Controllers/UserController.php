@@ -7,20 +7,46 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Utils\JWTUtil;
+use App\Repository\UserRepo;
 
 class UserController extends Controller
+
 {
+
+    protected $userService;
+
     public function getUser(Request $request)
     {
         $userId = $request->get('userId');
         if (!$userId) {
             return response()->json(['error' => 'User ID not found in token'], 401);
         }
-        $user = User::find($userId);
+        $user = $this->userService->getUserById($userId);
+        
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
         }
+
+        if ($user->banned == 1) {
+            return response()->json(['error' => 'Your account has been banned. Please contact support.'], 403);
+        }
         return response()->json($user);
+    }
+
+    public function updateUser(Request $request)
+    {
+        $userId = $request->get('userId');
+        if (!$userId) {
+            return response()->json(['error' => 'User ID not found in token'], 401);
+        }
+
+        $data = $request->only(['name', 'email', 'password']);
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+
+        $this->userService->updateUserById($userId, $data);
+        return response()->json(['message' => 'User updated successfully']);
     }
 
 }

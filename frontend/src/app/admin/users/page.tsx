@@ -329,7 +329,7 @@ export default function AdminUsers() {
                           onClick={() => deleteUser(user.id)}
                           className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded text-xs"
                         >
-                          Delete
+                          Ban
                         </button>
                       </div>
                     </td>

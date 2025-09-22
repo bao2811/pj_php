@@ -20,4 +20,5 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::post('/create/note', [NoteController::class, 'create']);   
     Route::put('/update/note/{note}', [NoteController::class, 'update']); 
     Route::delete('/delete/note/{note}', [NoteController::class, 'delete']);
+    Route::put('/update/user', [UserController::class, 'updateUser']);
 });

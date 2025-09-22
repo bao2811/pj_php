@@ -11,6 +11,7 @@ use App\Utils\JWTUtil;
 
 class AuthController extends Controller
 {
+    protected $userService;
     public function login(Request $request)
     {
         $request->validate([
@@ -18,7 +19,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = $this->userService->getUserById($request->id);
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -54,12 +55,9 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'user',
-        ]);
+        $user = $request->only(['name', 'email', 'password']);
+
+        $this->userService->createUser($user);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

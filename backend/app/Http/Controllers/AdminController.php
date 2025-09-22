@@ -9,13 +9,23 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Http\Controllers\UserController;
+use App\Services\AdminService;
 
 class AdminController extends Controller
 {
+    protected $adminService;
+
+    public function __construct(AdminService $adminService)
+    {
+        $this->adminService = $adminService;
+    }
+
     public function getTotalCounts(Request $request): JsonResponse {
         try {
-            $totalUsers = DB::table('users')->count();
-            $totalNotes = DB::table('notes')->count();
+            
+            $data = $this->adminService->getTotalCounts();
+            $totalUsers = $data['totalUsers'];
+            $totalNotes = $data['totalNotes'];
 
             return response()->json([
                 'totalUsers' => $totalUsers,
@@ -31,11 +41,7 @@ class AdminController extends Controller
 
     public function countNotes(Request $request) {
         try {
-            $notes = DB::select("SELECT year(now()) as year, month(created_at) as month, count(*) as count from notes group by year, month");
-            $notesPerMonth = array_fill(1, 12, 0); 
-            foreach ($notes as $note) {
-                $notesPerMonth[$note->month] = $note->count;
-            }
+            $notesPerMonth = $this->adminService->countNotes();
             return response()->json($notesPerMonth);
         } catch (\Exception $e) {
             return response()->json([
@@ -47,14 +53,8 @@ class AdminController extends Controller
 
     public function countUsers(Request $request) {
         try {
-            $users = DB::select("SELECT year(now()) as year, month(created_at) as month, count(*) as count from users group by year, month");
-            $usersPerMonth = array_fill(1, 12, 0);
-            $amount = 0;
-            foreach ($users as $user) {
-                $usersPerMonth[$user->month] = $user->count;
-                $amount += $user->count;
-            }
-            return response()->json([$usersPerMonth, $amount]);
+            $usersPerMonth = $this->adminService->countUsers();
+            return response()->json($usersPerMonth);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to fetch users count',
@@ -66,7 +66,7 @@ class AdminController extends Controller
     public function getUsers(Request $request)
     {
         try {
-            $users = DB::select("SELECT * from users u where u.banned = 0");
+            $users = $this->adminService->getAllUser();
             // $users = DB::select("SELECT u.id, u.email, u.created_at, u.updated_at, count(n.id) as total from users u 
             // left join notes n on u.id = n.userId
             // group by u.id, u.email");
@@ -84,7 +84,7 @@ class AdminController extends Controller
     public function getNotes(Request $request): JsonResponse
     {
         try {
-            $notes = DB::select("SELECT * from notes n");
+            $notes = $this->adminService->getNotes();
             return response()->json($notes);
 
         } catch (\Exception $e) {
@@ -99,9 +99,7 @@ class AdminController extends Controller
     public function getUserDetails(Request $request, $userId): JsonResponse
     {
         try {
-            $user = User::with(['notes' => function ($query) {
-                $query->orderBy('created_at', 'desc');
-            }])->findOrFail($userId);
+            $user = $this->adminService->getUserDetails($userId);
 
             return response()->json([
                 'id' => $user->id,
@@ -134,9 +132,7 @@ class AdminController extends Controller
     public function deleteUser(Request $request, $userId): JsonResponse
     {
         try {
-            $user = DB::update('UPDATE users SET banned = 1 WHERE id = ?', [$userId]);
-            $notes = DB::update('UPDATE notes SET isCur = 0 WHERE userId = ?', [$userId]);
-
+            $this->adminService->deleteUser($userId);
             return response()->json([
                 'message' => 'User and all their notes deleted successfully'
             ]);
@@ -149,69 +145,5 @@ class AdminController extends Controller
         }
     }
 
-    public function getAnalytics(Request $request): JsonResponse
-    {
-        try {
-            // Get users by registration month (last 12 months)
-            $usersByMonth = DB::table('users')
-                ->select(DB::raw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count'))
-                ->where('created_at', '>=', Carbon::now()->subMonths(12))
-                ->groupBy('year', 'month')
-                ->orderBy('year')
-                ->orderBy('month')
-                ->get();
-
-            // Get notes by creation month (last 12 months)
-            $notesByMonth = DB::table('notes')
-                ->select(DB::raw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count'))
-                ->where('created_at', '>=', Carbon::now()->subMonths(12))
-                ->groupBy('year', 'month')
-                ->orderBy('year')
-                ->orderBy('month')
-                ->get();
-
-            // Get most active users
-            $mostActiveUsers = User::withCount('notes')
-                ->orderBy('notes_count', 'desc')
-                ->limit(10)
-                ->get()
-                ->map(function ($user) {
-                    return [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'notes_count' => $user->notes_count,
-                    ];
-                });
-
-
-            $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
-            $recentNotes = Note::with('user:id,name')
-                ->orderBy('created_at', 'desc')
-                ->limit(10)
-                ->get()
-                ->map(function ($note) {
-                    return [
-                        'id' => $note->id,
-                        'title' => $note->title,
-                        'user' => $note->user,
-                        'created_at' => $note->created_at,
-                    ];
-                });
-
-            return response()->json([
-                'usersByMonth' => $usersByMonth,
-                'notesByMonth' => $notesByMonth,
-                'mostActiveUsers' => $mostActiveUsers,
-                'recentUsers' => $recentUsers,
-                'recentNotes' => $recentNotes,
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to fetch analytics',
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    }
+    
 }
