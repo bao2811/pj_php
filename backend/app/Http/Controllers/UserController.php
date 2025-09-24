@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Utils\JWTUtil;
-use App\Repository\UserRepo;
+use App\Services\UserService;
 
 class UserController extends Controller
 
@@ -15,9 +15,16 @@ class UserController extends Controller
 
     protected $userService;
 
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function getUser(Request $request)
     {
-        $userId = $request->get('userId');
+
+        $user = $request->user();
+        $userId = $user->id ?? null;
         if (!$userId) {
             return response()->json(['error' => 'User ID not found in token'], 401);
         }
@@ -35,7 +42,8 @@ class UserController extends Controller
 
     public function updateUser(Request $request)
     {
-        $userId = $request->get('userId');
+        $user = $request->user();
+        $userId = $user->id ?? null;
         if (!$userId) {
             return response()->json(['error' => 'User ID not found in token'], 401);
         }

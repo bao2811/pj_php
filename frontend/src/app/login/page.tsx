@@ -42,8 +42,8 @@ const Login = () => {
         formData
       );
 
-      localStorage.setItem("token", response.data.jwt_token);
-      localStorage.setItem("jwtToken", response.data.jwt_token);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("jwtToken", response.data.token);
 
       if (response.data.user && response.data.user.role === "admin") {
         localStorage.setItem("user", JSON.stringify(response.data.user));

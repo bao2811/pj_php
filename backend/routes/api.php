@@ -12,7 +12,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
-Route::middleware([JwtMiddleware::class])->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'getUser']);
     Route::get('/notes', [NoteController::class, 'index']);              
     Route::get('/notes/user', [NoteController::class, 'getAllByUserId']); 

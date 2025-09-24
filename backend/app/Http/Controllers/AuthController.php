@@ -8,10 +8,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Utils\JWTUtil;
+use App\Services\UserService;
 
 class AuthController extends Controller
 {
     protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -19,7 +26,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = $this->userService->getUserById($request->id);
+        $user = $this->userService->getUserByEmail($request->email);
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([

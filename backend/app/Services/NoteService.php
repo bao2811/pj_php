@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Repository;
+namespace App\Services;
 
 use App\Models\Note;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use App\Repository\NoteRepo;
 
 class NoteService
 {

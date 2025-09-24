@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AdminRepo {
 
@@ -47,7 +48,7 @@ class AdminRepo {
     }
 
 
-    public function countUsers(Request $request) {
+    public function countUsers() {
         try {
             $users = DB::table('users')
             ->selectRaw('YEAR(NOW()) as year, MONTH(created_at) as month, COUNT(*) as count')
@@ -69,7 +70,7 @@ class AdminRepo {
     }
 
 
-     public function getUsers(Request $request)
+     public function getUsers()
     {
         try {
             $users = DB::table('users')->where('banned', 0)->get();
@@ -140,7 +141,7 @@ class AdminRepo {
         }
     }
 
-    public function getAnalytics(Request $request): JsonResponse
+    public function getAnalytics()
     {
         try {
             // Get users by registration month (last 12 months)

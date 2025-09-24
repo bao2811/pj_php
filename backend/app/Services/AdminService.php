@@ -1,50 +1,52 @@
 <?php
 
-namespace App\Repository;
+namespace App\Services;
 
 use App\Models\Note;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
-class NoteRepo
+use App\Repository\AdminRepo;
+
+class AdminService
 {
-    protected $noteRepo;
+    protected $adminRepo;
     
     public function __construct()
     {
-        $this->noteRepo = new Note();
+        $this->adminRepo = new AdminRepo();
     }
 
     public function getTotalCounts() {
-        return $this->noteRepo->getTotalCounts();
+        return $this->adminRepo->getTotalCounts();
     }
 
     public function countNotes() {
-        return $this->noteRepo->countNotes();
+        return $this->adminRepo->countNotes();
     }
 
     public function countUsers() {
-        return $this->noteRepo->countUsers();
+        return $this->adminRepo->countUsers();
     }
 
     public function getNotes() {
-        return $this->noteRepo->getNotes();
+        return $this->adminRepo->getNotes();
     }
 
     public function getUsers() {
-        return $this->noteRepo->getUsers();
+        return $this->adminRepo->getUsers();
     }
 
     public function deleteUser(int $id) {
-        return $this->noteRepo->deleteUser($id);
+        return $this->adminRepo->deleteUser($id);
     }
 
     public function getUserDetails(int $userId) {
-        return $this->noteRepo->getUserDetails($userId);
+        return $this->adminRepo->getUserDetails($userId);
     }
 
     public function getAllUser() {
-        return $this->noteRepo->getAllUser();
+        return $this->adminRepo->getAllUser();
     }
 
 }

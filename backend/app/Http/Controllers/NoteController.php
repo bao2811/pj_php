@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\NoteService;
 
 
 class NoteController extends Controller
@@ -24,7 +25,8 @@ class NoteController extends Controller
 
     public function getAllByUserId(Request $request)
     {
-        $userId = $request->get('userId');
+        $user = $request->user();
+        $userId = $user->id ?? null;
         if (!$userId) {
             return response()->json(['error' => 'User ID not found in token'], 401);
         }
@@ -44,7 +46,9 @@ class NoteController extends Controller
 
     public function delete(Note $note, Request $request)
     {
-        $userId = $request->get('userId');
+        // $userId = $request->get('userId');
+        $user = $request->user();
+        $userId = $user->id ?? null;
         $note = $this->noteService->delete($note->id, $userId);
         return response()->json($note, 200);
     }
@@ -53,7 +57,9 @@ class NoteController extends Controller
     {
         $title = $request->input('title');
         $content = $request->input('content');
-        $userId = $request->get('userId');
+        // $userId = $request->get('userId');
+        $user = $request->user();
+        $userId = $user->id ?? null;
 
         $data = [
             'title'   => $title,
@@ -75,7 +81,9 @@ class NoteController extends Controller
     {
         $title = $request->input('title');
         $content = $request->input('content');
-        $userId = $request->input('userId');
+        // $userId = $request->input('userId');
+        $user = $request->user();
+        $userId = $user->id ?? null;
 
         $data = [
             'title'   => $title,

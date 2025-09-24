@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserRepo
 {
@@ -43,5 +44,8 @@ class UserRepo
         return $user;
     }
  
+    function getUserByEmail($email) {
+        return User::where('email', $email)->first();
+    }
 
 }

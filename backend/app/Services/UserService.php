@@ -30,5 +30,7 @@ class UserService
         return $this->userRepo->createUser($data);
     }
 
-
+    public function getUserByEmail($email) {
+        return $this->userRepo->getUserByEmail($email);
+    }
 }
