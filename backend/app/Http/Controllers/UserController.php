@@ -25,35 +25,25 @@ class UserController extends Controller
 
         $user = $request->user();
         $userId = $user->id ?? null;
-        if (!$userId) {
-            return response()->json(['error' => 'User ID not found in token'], 401);
-        }
-        $user = $this->userService->getUserById($userId);
         
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+        $result = $this->userService->getUserById($userId);
+
+        if (!$result['success']) {
+            return response()->json(['error' => $result['error']], 404);
         }
 
-        if ($user->banned == 1) {
-            return response()->json(['error' => 'Your account has been banned. Please contact support.'], 403);
-        }
-        return response()->json($user);
+        return response()->json($result['data']);
     }
 
     public function updateUser(Request $request)
     {
         $user = $request->user();
         $userId = $user->id ?? null;
-        if (!$userId) {
-            return response()->json(['error' => 'User ID not found in token'], 401);
-        }
-
         $data = $request->only(['name', 'email', 'password']);
-        if (isset($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
+        $result = $this->userService->updateUserById($userId, $data);
+        if (!$result['success']) {
+            return response()->json(['error' => $result['error']], 404);
         }
-
-        $this->userService->updateUserById($userId, $data);
         return response()->json(['message' => 'User updated successfully']);
     }
 

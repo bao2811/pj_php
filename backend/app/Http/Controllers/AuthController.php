@@ -26,18 +26,13 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = $this->userService->getUserByEmail($request->email);
+        $result = $this->userService->getUserByEmail($request->email);
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        if (!$result['success']) {
+            return response()->json(['error' => $result['error']], 401);
         }
 
-        if ($user->banned == 1) {
-            return response()->json(['error' => 'Your account has been banned. Please contact support.'], 403);
-        }
-
+        $user = $result['data'];
         $token = $user->createToken('auth_token')->plainTextToken;
         $jwtToken = JWTUtil::generateToken($user->id, 60);
 

@@ -19,12 +19,25 @@ class NoteService
 
     public function getAllByUserId(int $id): ?Collection
     {
-       return $this->noteRepo->getAllByUserId($id);
+        if (!$id) {
+            return ['success' => false, 'error' => 'User ID not found in token'];
+        }
+        $notes = $this->noteRepo->getAllByUserId($id);
+
+        if (!$notes) {
+            return ['success' => false, 'error' => 'No notes found for this user.'];
+        }
+
+        return ['success' => true, 'data' => $notes];
     }
 
     public function getNoteById(int $id): ?Note
     {
-        return $this->noteRepo->getNoteById($id);
+        $note = $this->noteRepo->getNoteById($id);
+        if (empty($note)) {
+            return ['success' => false, 'error' => 'Note not found.'];
+        }
+        return ['success' => true, 'data' => $note];
     }
 
     public function delete(int $noteId, int $userId): bool

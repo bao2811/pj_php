@@ -27,10 +27,11 @@ class NoteController extends Controller
     {
         $user = $request->user();
         $userId = $user->id ?? null;
-        if (!$userId) {
-            return response()->json(['error' => 'User ID not found in token'], 401);
-        }
         $notes = $this->noteService->getAllByUserId($userId);
+        if (!$notes['success']) {
+            return response()->json(['error' => $notes['error']], 404);
+        }
+        $notes = $notes['data'];
         return response()->json($notes);
     }
 
